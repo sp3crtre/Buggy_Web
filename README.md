@@ -11,7 +11,7 @@ Are you tired of the tedious task of manually setting up and managing websites w
 git clone https://github.com/sp3crtre/Buggy_Web.git
 ```
 
-#### Make it executable and granted and root access
+#### Make it executable and granted a root access
 ```
 sudo chmod +x BuggyWeb.sh
 ```
