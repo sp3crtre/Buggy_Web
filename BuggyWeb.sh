@@ -1,34 +1,9 @@
 #!/bin/bash
+RED='\033[0;31m'     # Red color
+GREEN='\033[0;32m'   # Green color
+RESET='\033[0m'      # Reset to default color
 
-select_docker_image() {
-  docker_images=("santosomar/gravemind" "santosomar/dc30_01:latest" "santosomar/dc31_01:latest" "santosomar/dvna" "santosomar/ywing:latest" "santosomar/hackme-rtov" "santosomar/mayhem" "santosomar/dc31_03:latest" "santosomar/dvwa" "santosomar/dc31_02:latest" "santosomar/dc30_02:latest" "santosomar/juice-shop")
-
-  echo "Select a Docker image to run:"
-  for i in "${!docker_images[@]}"; do
-    echo "($((i+1))) ${docker_images[$i]}"
-  done
-
-  read -p "Enter the number corresponding to the Docker image: " choice
-
-  if [[ ! $choice =~ ^[1-9]|10|11|12$ ]]; then
-    echo "Invalid choice. Exiting."
-    exit 1
-  fi
-
-  selected_image="${docker_images[choice-1]}"
-  docker run -d "$selected_image"
-
-}
-
-terminate_all_containers() {
-  echo "Terminating all running Docker containers..."
-  docker stop $(docker ps -q)
-  echo "All running Docker containers terminated."
-
-}
-
-clear
-echo "                                                                                    
+ASCII_ART="${RED}
 @@@@@@@   @@@  @@@   @@@@@@@@   @@@@@@@@  @@@ @@@     @@@  @@@  @@@  @@@@@@   @@@@@@@   
 @@@@@@@@  @@@  @@@  @@@@@@@@@  @@@@@@@@@  @@@ @@@     @@@  @@@  @@@  @@@@@@@  @@@@@@@@  
 @@!  @@@  @@!  @@@  !@@        !@@        @@! !@@     @@!  @@!  @@!      @@@  @@!  @@@  
@@ -37,18 +12,61 @@ echo "
 !!!@!!!!  !@!  !!!  !!! !!@!!  !!! !!@!!    @!!!      !@!  !!!  !@!  !!@!@!   !!!@!!!!  
 !!:  !!!  !!:  !!!  :!!   !!:  :!!   !!:    !!:       !!:  !!:  !!:      !!:  !!:  !!!  
 :!:  !:!  :!:  !:!  :!:   !::  :!:   !::    :!:       :!:  :!:  :!:      :!:  :!:  !:!  
- :: ::::  ::::: ::   ::: ::::   ::: ::::     ::        :::: :: :::   :: ::::   :: ::::  
-:: : ::    : :  :    :: :: :    :: :: :      :          :: :  : :     : : :   :: : ::   
-
+::  ::::  ::::: ::   ::: ::::   ::: ::::     ::        :::: :: :::   :: ::::   :: ::::  
+::  : ::    : :  :    :: :: :    :: :: :      :          :: :  : :     : : :   :: : :: 
+${RESET}
 Author: Kaizer Baynosa | Spectre  
 Credits to the original author for the base code used in this script.
-
-1. Run a Docker image
-2. Terminate all running Docker containers
-3. Install all Testing Lab
-4. Exit
 "
 
+select_docker_image() {
+  clear
+  echo -e "$ASCII_ART"
+  docker_images=("santosomar/gravemind" "santosomar/dc30_01:latest" "santosomar/dc31_01:latest" "santosomar/dvna" "santosomar/ywing:latest" "santosomar/hackme-rtov" "santosomar/mayhem" "santosomar/dc31_03:latest" "santosomar/dvwa" "santosomar/dc31_02:latest" "santosomar/dc30_02:latest" "santosomar/juice-shop")
+  echo ""
+  echo "Select a Docker image to run:"
+  
+  for i in "${!docker_images[@]}"; do
+    echo "[$((i+1))] ${docker_images[$i]}"
+  done
+
+  echo ""
+  read -p "Enter the number corresponding to the Docker image: " choice
+
+  if [[ ! $choice =~ ^[1-9]|10|11|12$ ]]; then
+    echo "Invalid choice. Exiting."
+    exit 1
+  fi
+
+  selected_image="${docker_images[choice-1]}"
+  container_id=$(docker run -d -P "$selected_image")
+
+  container_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' "$container_id")
+  container_port=$(docker port "$container_id" | cut -d'-' -f1)
+  echo "Host: http://$container_ip:$container_port" | sed 's#/tcp##'
+  echo ""
+  echo "Happy Hacking"
+
+}
+
+
+terminate_all_containers() {
+  clear
+  echo -e "$ASCII_ART"
+  echo "Terminating all running Docker containers..."
+  docker stop $(docker ps -q)
+  echo "All running Docker containers terminated."
+
+}
+
+clear
+echo -e "$ASCII_ART"
+
+echo -e "[1] ${GREEN}Run a Docker image${RESET}"
+echo -e "[2] ${GREEN}Terminate all running Docker containers${RESET}"
+echo -e "[3] ${GREEN}Install all Testing Lab${RESET}"
+echo -e "[4] ${GREEN}Exit${RESET}"
+echo ""
 read -p "[+] Choose an option above: " menu_choice
 
 case $menu_choice in
@@ -59,6 +77,8 @@ case $menu_choice in
     terminate_all_containers
     ;;
   3) 
+    clear
+    echo -e "$ASCII_ART"
     read -n 1 -s -r -p "Press any key to continue the setup..."
 
     echo " "
@@ -84,44 +104,31 @@ case $menu_choice in
     echo "Setting up the containers and internal bridge network"
     docker-compose -f docker-compose.yml up -d
 
-    # installing hostapd
     apt install hostapd
 
-    #Installing tor
     apt install -y tor
 
-    #Installing certspy
     pip3 install certspy
 
-    #Installing Jupyter Notebooks
     apt install -y jupyter-notebook
 
-    #Installing EDB
     apt install -y edb-debugger
 
-    # Installing NodeGoat
-    # cloning the NodeGoat repo
     git clone https://github.com/OWASP/NodeGoat.git
 
-    # replacing the docker-compose.yml file with my second bridge network (10.7.7.0/24)
     curl -sSL https://websploit.org/nodegoat-docker-compose.yml > /root/NodeGoat/docker-compose.yml
 
-    # downloading the nodegoat.sh script from websploit
-    # this will be used manually to setup the NodeGoat environment
     wget https://websploit.org/nodegoat.sh
     chmod 744 nodegoat.sh 
 
-    # Installing Gorilla-CLI to be used in AI-related training
     pip3 install gorilla-cli
 
-    #Getting the container info script
     sudo cd /root
     curl -sSL https://websploit.org/containers.sh > /root/containers.sh
 
     chmod +x /root/containers.sh
     mv /root/containers.sh /usr/local/bin/containers 
 
-    #Final confirmation
     sudo /usr/local/bin/containers
     echo "Installation completed successfully. Happy hacking!"
 
