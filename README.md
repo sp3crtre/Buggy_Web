@@ -1,6 +1,6 @@
 # Buggy_Web
 
-Do you find it cumbersome to manually install and manage those bug-ridden websites using Docker containers? If so, you're in luck because I'm here to assist you. I've developed this automation to simplify the process for you, making it a breeze to use these websites without any hassle or headache. Let's make your web development tasks smoother and more efficient
+Are you tired of the tedious task of manually setting up and managing websites with security vulnerabilities using Docker containers? If so, you're in luck because I'm here to help. I've created this automation tool to streamline the entire process, making it incredibly easy to deploy and manage these websites without any hassle or headaches. Let's enhance your security testing experience in the virtual lab and make your tasks smoother and more efficient
 
 <img src="/buggy.png" alt="banner" />
 
