@@ -41,5 +41,5 @@ sudo chmod +x BuggyWeb.sh
 #### Now, run it by simply typing the command below:
 
 ```
-./BuggyWeb.sh
+sudo ./BuggyWeb.sh
 ```
