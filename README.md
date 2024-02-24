@@ -1,4 +1,4 @@
- <img src="./logo.png" style="width: 200px;"/>
+ <img src="./logo.png" style="width: 550px;"/>
 
 buggy web - virtual lab setup
 =========
