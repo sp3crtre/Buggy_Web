@@ -16,7 +16,6 @@ ASCII_ART="${RED}
 ::  : ::    : :  :    :: :: :    :: :: :      :          :: :  : :     : : :   :: : :: 
 ${RESET}
 Author: Kaizer Baynosa | Spectre  
-Credits to the original author for the base code used in this script.
 "
 source venv/bin/activate
 
